@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Log In</title>
+    <meta name="description" content="Leaderboard for daily puzzle games.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!--Favicon-->
+    <link rel="icon" type="image/x-icon" href="Images/logo.png">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-left">
+                <a href="index.html"><img src="Images/logo.jpg" alt="Logo" class="logo"></a>
+            </div>
+
+            <div class="nav-right" id="navRightMenu">
+                <a href="search.html" class="nav-link pill-btn">Search</a>
+                <a href="contacts.html" class="nav-link pill-btn">Contacts</a>
+                <a href="signup.html" class="nav-link pill-btn">Sign Up</a>
+                <a href="login.html" class="nav-link pill-btn">Log In</a>
+            </div>
+            
+            <div class="menu-container" id="menu" onclick="myFunction(this)">
+                <div class="bar1"></div>
+                <div class="bar2"></div>
+                <div class="bar3"></div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Log In</h1>
+        <div class="form-card-container">
+            <div class="card auth-card">
+                <!-- Login Identifier (Username or Email) -->
+                <label for="loginInput">Email or Username:</label>
+                <input type="text" id="loginInput" placeholder="your@email.com or Username" class="auth-input" oninput="clearError('loginInput')">
+                <small id="loginInputError" class="field-error"></small>
+
+                <!-- Password Field -->
+                <label for="password">Password:</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" placeholder="Your password" class="auth-input" oninput="clearError('password')">
+                    <i class="fa-solid fa-eye toggle-password" onclick="togglePasswordVisibility('password', this)"></i>
+                </div>
+                <small id="passwordError" class="field-error"></small>
+
+                <button onclick="handleLogin()" class="pill-btn auth-btn">Log In</button>
+                <p id="generalMessage" class="auth-message"></p>
+                <p class="auth-switch">Need an account? <a href="signup.html">Sign Up</a></p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 Daily Game Leaderboard. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        function togglePasswordVisibility(fieldId, icon) {
+            const field = document.getElementById(fieldId);
+            if (field.type === "password") {
+                field.type = "text";
+                icon.classList.replace("fa-eye", "fa-eye-slash");
+            } else {
+                field.type = "password";
+                icon.classList.replace("fa-eye-slash", "fa-eye");
+            }
+        }
+
+        function showError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(fieldId + 'Error');
+            field.classList.add('input-error');
+            errorElement.innerText = message;
+        }
+
+        function clearError(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(fieldId + 'Error');
+            field.classList.remove('input-error');
+            errorElement.innerText = '';
+        }
+
+        async function handleLogin() {
+            const loginInput = document.getElementById('loginInput').value.trim();
+            const password = document.getElementById('password').value;
+            const generalMsg = document.getElementById('generalMessage');
+
+            generalMsg.innerText = '';
+            let hasError = false;
+
+            if (!loginInput) {
+                showError('loginInput', 'Please enter your email or username.');
+                hasError = true;
+            }
+            if (!password) {
+                showError('password', 'Please enter your password.');
+                hasError = true;
+            }
+
+            if (hasError) return;
+
+            generalMsg.style.color = '#333';
+            generalMsg.innerText = 'Logging in...';
+
+            const { data: resolvedEmail, error: rpcError } = await _supabase
+                .rpc('get_email_by_username_or_email', { login_input: loginInput });
+
+            if (rpcError || !resolvedEmail) {
+                generalMsg.style.color = '#d9534f';
+                generalMsg.innerText = 'Account not found with that username/email.';
+                return;
+            }
+
+            const { data, error } = await _supabase.auth.signInWithPassword({ 
+                email: resolvedEmail, 
+                password 
+            });
+
+            if (error) {
+                generalMsg.style.color = '#d9534f';
+                generalMsg.innerText = error.message;
+            } else {
+                generalMsg.style.color = '#5cb85c';
+                generalMsg.innerText = 'Login successful! Redirecting...';
+                setTimeout(() => window.location.href = 'wordle.html', 1000);
+            }
+        }
+    </script>
+</body>
+</html>

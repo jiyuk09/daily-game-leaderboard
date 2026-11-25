@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Contacts</title>
+    <meta name="description" content="Leaderboard for daily puzzle games.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!--Favicon-->
+    <link rel="icon" type="image/x-icon" href="Images/logo.png">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-left">
+                <a href="index.html">
+                    <img src="Images/logo.jpg" alt="Logo" class="logo">
+                </a>
+            </div>
+
+            <div class="menu-container" id="menu" onclick="myFunction(this)">
+                <div class="bar1"></div>
+                <div class="bar2"></div>
+                <div class="bar3"></div>
+            </div>
+
+            <div class="nav-right" id="navRightMenu">
+                <a href="search.html" class="nav-link pill-btn">Search</a>
+                <a href="contacts.html" class="nav-link pill-btn">Contacts</a>
+                <a href="signup.html" class="nav-link pill-btn">Sign Up</a>
+                <a href="login.html" class="nav-link pill-btn">Log In</a>
+            </div>
+        </nav>
+
+        <div class="hero-image">
+            <img src="Images/hero-banner.jpg" alt="Daily Game Leaderboard Hero Banner" id="hero-img-element">
+        </div>
+    </header>
+
+    <footer>
+        <p>© 2026 Daily Game Leaderboard. All rights reserved.</p>
+        <p class="disclaimer">
+            <em>Disclaimer: This website is an independent fan project and leaderboard. All game titles, logos, and trademarks belong to their respective owners and are used strictly for identification purposes.</em>
+        </p>
+    </footer>
+
+    <script defer src="script.js"></script>
+</body>
+</html>

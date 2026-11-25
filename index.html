@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Daily Game Leaderboard</title>
+    <meta name="description" content="Leaderboard for daily puzzle games.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!--Favicon-->
+    <link rel="icon" type="image/x-icon" href="Images/logo.png">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-left">
+                <a href="index.html">
+                    <img src="Images/logo.jpg" alt="Logo" class="logo">
+                </a>
+            </div>
+
+            <div class="menu-container" id="menu" onclick="myFunction(this)">
+                <div class="bar1"></div>
+                <div class="bar2"></div>
+                <div class="bar3"></div>
+            </div>
+
+            <div class="nav-right" id="navRightMenu">
+                <a href="search.html" class="nav-link pill-btn">Search</a>
+                <a href="contacts.html" class="nav-link pill-btn">Contacts</a>
+                <a href="signup.html" class="nav-link pill-btn">Sign Up</a>
+                <a href="login.html" class="nav-link pill-btn">Log In</a>
+            </div>
+        </nav>
+
+        <div class="hero-image">
+            <img src="Images/hero-banner.jpg" alt="Daily Game Leaderboard Hero Banner" id="hero-img-element">
+        </div>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Choose a Daily Game</h1>
+        <div class="game-grid">
+            <a href="wordle.html" class="card">
+                <img src="Images/wordle.jpg" alt="Wordle Logo" class="game-logo">
+                <h3>Wordle</h3>
+                <p>Text</p>
+            </a>
+
+            <a href="connections.html" class="card">
+                <img src="Images/connections.jpg" alt="Connections Logo" class="game-logo">
+                <h3>Connections</h3>
+                <p>Text</p>
+            </a>
+
+            <a href="crossword.html" class="card">
+                <img src="Images/crossword.jpg" alt="Crossword Logo" class="game-logo">
+                <h3>Crossword</h3>
+                <p>Text</p>
+            </a>
+        </div>
+
+        <div class="game-grid">
+            <a href="strands.html" class="card">
+                <img src="Images/strands.jpg" alt="Strands Logo" class="game-logo">
+                <h3>Strands</h3>
+                <p>Text</p>
+            </a>
+
+            <a href="pips.html" class="card">
+                <img src="Images/pips.jpg" alt="Pips Logo" class="game-logo">
+                <h3>Pips</h3>
+                <p>Text</p>
+            </a>
+
+            <a href="krillion.html" class="card">
+                <img src="Images/krillion.jpg" alt="Krillion Logo" class="game-logo">
+                <h3>Krillion</h3>
+                <p>Text</p>
+            </a>
+        </div>
+
+        <div class="game-grid">
+            <a href="enclosehorse.html" class="card">
+                <img src="Images/enclose_horse.jpg" alt="Enclose Horse Logo" class="game-logo">
+                <h3>Enclose Horse</h3>
+                <p>Text</p>
+            </a>
+
+            <a href="globle.html" class="card">
+                <img src="Images/globle.jpg" alt="Globle Logo" class="game-logo">
+                <h3>Globle</h3>
+                <p>Text</p>
+            </a>
+
+            <div class="card placeholder-card">
+                <h3>Coming Soon</h3>
+                <p>Suggest a game on our contacts page</p>
+            </div>
+        </div>
+    </main>
+
+    <button onclick="topFunction()" id="topBtn" title="Go to top"><i class="arrow up"></i></button>
+
+    <footer>
+        <p>© 2026 Daily Game Leaderboard. All rights reserved.</p>
+        <p class="disclaimer">
+            <em>Disclaimer: This website is an independent fan project and leaderboard. All game titles, logos, and trademarks belong to their respective owners and are used strictly for identification purposes.</em>
+        </p>
+    </footer>
+
+    <script defer src="script.js"></script>
+</body>
+</html>

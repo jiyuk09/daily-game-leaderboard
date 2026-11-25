@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Wordle Leaderboard</title>
+    <meta name="description" content="Leaderboard for daily puzzle games.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!--Favicon-->
+    <link rel="icon" type="image/x-icon" href="Images/logo.png">
+
+    <style>
+        .dashboard-layout {
+            display: flex;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 25px auto;
+            align-items: flex-start;
+        }
+
+        .leaderboard-column {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .submission-column {
+            width: 420px;
+            flex-shrink: 0;
+        }
+
+        .tablink-container {
+            display: flex;
+            width: 100%;
+            border: 1px solid #A79A8A;
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+            background-color: #3E3630;
+        }
+
+        .tablink {
+            background-color: #3E3630;
+            color: #FCF7DF;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            font-size: 15px;
+            font-family: "Montserrat", sans-serif;
+            font-weight: 600;
+            width: 33.333%;
+            text-align: center;
+            transition: background-color 0.2s, color 0.2s, opacity 0.2s;
+            border-right: 1px solid #A79A8A;
+        }
+
+        .tablink:last-child {
+            border-right: none;
+        }
+
+        .tablink:hover:not(:disabled) {
+            background-color: #C7B3DB;
+            color: #3E3630;
+        }
+
+        .tablink:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .tablink.active-date-tab {
+            background-color: #C7B3DB;
+            color: #3E3630;
+        }
+
+        .tabcontent {
+            display: block;
+            background-color: #FCF7DF;
+            padding: 20px;
+            border: 1px solid #A79A8A;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 8px rgba(62, 54, 48, 0.08);
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #FCF7DF;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #A79A8A;
+        }
+
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #A79A8A;
+            color: #3E3630;
+        }
+
+        .leaderboard-table th {
+            background-color: #C7B3DB;
+            color: #3E3630;
+            font-family: "Playfair Display", serif;
+        }
+
+        .leaderboard-table tr:hover {
+            background-color: rgba(199, 179, 219, 0.15);
+        }
+        
+        @media (max-width: 750px) {
+            .dashboard-layout {
+                flex-direction: column-reverse;
+                align-items: center;
+            }
+
+            .leaderboard-column {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .tablink-container, .tabcontent {
+                max-width: 100%;
+                width: 100%;
+            }
+
+            .submission-column {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body onload="initWordlePage()">
+    <header>
+        <nav class="navbar">
+            <div class="nav-left">
+                <a href="index.html"><img src="Images/logo.jpg" alt="Logo" class="logo"></a>
+            </div>
+
+            <div class="menu-container" id="menu" onclick="myFunction(this)">
+                <div class="bar1"></div>
+                <div class="bar2"></div>
+                <div class="bar3"></div>
+            </div>
+
+            <div class="nav-right" id="navRightMenu">
+                <a href="search.html" class="nav-link pill-btn">Search</a>
+                <a href="contacts.html" class="nav-link pill-btn">Contacts</a>
+                <a href="signup.html" class="nav-link pill-btn">Sign Up</a>
+                <a href="login.html" class="nav-link pill-btn">Log In</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Wordle Leaderboard</h1>
+
+        <div class="dashboard-layout">
+            <div class="leaderboard-column">
+                <div class="tablink-container">
+                    <button class="tablink" id="leftTabBtn" onclick="changeDate(-1)">&#10094; Prev</button>
+                    <button class="tablink active-date-tab" id="currentDateDisplay">Today</button>
+                    <button class="tablink" id="rightTabBtn" onclick="changeDate(1)">Next &#10095;</button>
+                </div>
+
+                <div id="LeaderboardTab" class="tabcontent">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Player</th>
+                                <th>Best Score (Tries)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody">
+                            <tr><td colspan="3" style="text-align: center;">Loading leaderboard...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="submission-column">
+                <div class="form-card-container" id="submissionContainer" style="display: none; margin-top: 0;">
+                    <div class="card auth-card" style="height: auto; align-items: stretch; text-align: left; width: 100%; max-width: 100%;">
+                        <h3>Submit Score</h3>
+                        <p style="font-size: 13px; color: #3E3630; opacity: 0.8; margin-bottom: 12px;">Paste your Wordle share text below. Entries are restricted to today and are strictly final!</p>
+                        
+                        <label for="shareText">Paste Share Result:</label>
+                        <textarea id="shareText" rows="4" placeholder="Wordle 1,024 3/6&#10;🟩🟩⬛⬛⬛&#10;..." class="auth-input" style="resize: vertical;"></textarea>
+
+                        <button onclick="parseAndSubmitWordle()" class="pill-btn auth-btn">Submit Result</button>
+                        <p id="submitMsg" class="auth-message"></p>
+                    </div>
+                </div>
+
+                <div id="loginPrompt" style="text-align: center; margin: 20px 0; display: none; background: #FCF7DF; border: 1px solid #A79A8A; padding: 20px; border-radius: 8px;">
+                    <p style="color: #d9534f; font-weight: 600; font-size: 15px; margin-bottom: 10px;">You must be logged in to submit a score.</p>
+                    <a href="login.html" class="pill-btn" style="font-size: 14px; padding: 6px 16px;">Log In Now</a>
+                </div>
+
+                <div id="pastDateNotice" style="text-align: center; margin: 20px 0; display: none; background: #FCF7DF; border: 1px solid #A79A8A; padding: 20px; border-radius: 8px;">
+                    <p style="color: #3E3630; font-weight: 600; font-size: 14px; margin-bottom: 5px;">Submissions Closed</p>
+                    <p style="color: #A79A8A; font-size: 13px;">You are viewing a past date. Score submissions are restricted to today's active puzzle.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 Daily Game Leaderboard. All rights reserved.</p>
+        <p class="disclaimer">Scores can only be submitted for the current day and are final upon entry.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        function getLocalTodayString() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        let selectedDate = new Date();
+
+        function formatDateString(dateObj) {
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        async function initWordlePage() {
+            updateDateNavUI();
+            loadLeaderboard();
+        }
+
+        function changeDate(direction) {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
+            const targetDate = new Date(selectedDate);
+            targetDate.setDate(targetDate.getDate() + direction);
+            targetDate.setHours(0,0,0,0);
+
+            const minDate = new Date(today);
+            minDate.setDate(today.getDate() - 7);
+
+            if (targetDate > today) return; // Prevent going past current date
+            if (targetDate < minDate) return; // Prevent going beyond 7 days
+
+            selectedDate = targetDate;
+            updateDateNavUI();
+            loadLeaderboard();
+        }
+
+        async function updateDateNavUI() {
+            const todayStr = getLocalTodayString();
+            const currentSelectedStr = formatDateString(selectedDate);
+            const displaySpan = document.getElementById('currentDateDisplay');
+            const leftBtn = document.getElementById('leftTabBtn');
+            const rightBtn = document.getElementById('rightTabBtn');
+            const options = { weekday: 'short', month: 'short', day: 'numeric' };
+
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const selDay = new Date(selectedDate);
+            selDay.setHours(0,0,0,0);
+
+            const minDate = new Date(today);
+            minDate.setDate(today.getDate() - 7);
+
+            if (selDay <= minDate) {
+                leftBtn.disabled = true;
+            } else {
+                leftBtn.disabled = false;
+            }
+
+            if (selDay >= today) {
+                rightBtn.disabled = true;
+                displaySpan.innerText = "Today";
+            } else {
+                rightBtn.disabled = false;
+                displaySpan.innerText = selectedDate.toLocaleDateString('en-US', options);
+            }
+
+            const { data: { user } } = await _supabase.auth.getUser();
+            const submissionContainer = document.getElementById('submissionContainer');
+            const loginPrompt = document.getElementById('loginPrompt');
+            const pastDateNotice = document.getElementById('pastDateNotice');
+
+            if (currentSelectedStr === todayStr) {
+                pastDateNotice.style.display = 'none';
+                if (user) {
+                    submissionContainer.style.display = 'block';
+                    loginPrompt.style.display = 'none';
+                } else {
+                    submissionContainer.style.display = 'none';
+                    loginPrompt.style.display = 'block';
+                }
+            } else {
+                submissionContainer.style.display = 'none';
+                loginPrompt.style.display = 'none';
+                pastDateNotice.style.display = 'block';
+            }
+        }
+
+        async function parseAndSubmitWordle() {
+            const text = document.getElementById('shareText').value.trim();
+            const msg = document.getElementById('submitMsg');
+            msg.innerText = '';
+
+            const { data: { user } } = await _supabase.auth.getUser();
+            if (!user) {
+                msg.style.color = '#d9534f';
+                msg.innerText = 'Access denied. You must be logged in to submit scores.';
+                return;
+            }
+
+            if (!text) {
+                msg.style.color = '#d9534f';
+                msg.innerText = 'Please paste your Wordle result text.';
+                return;
+            }
+
+            if (!text.toLowerCase().includes('wordle')) {
+                msg.style.color = '#d9534f';
+                msg.innerText = 'Invalid game share text. This does not look like a Wordle result.';
+                return;
+            }
+
+            const headerMatch = text.match(/Wordle\s*#?([\d,]+)\s+([1-6]|X)\/6/i);
+            if (!headerMatch) {
+                msg.style.color = '#d9534f';
+                msg.innerText = 'Could not read the Wordle header (e.g., "Wordle 1,024 4/6"). Check your formatting.';
+                return;
+            }
+
+            const puzzleNumber = parseInt(headerMatch[1].replace(/,/g, ''));
+            const scoreChar = headerMatch[2].toUpperCase();
+            const declaredScore = scoreChar === 'X' ? 7 : parseInt(scoreChar);
+
+            const lines = text.split('\n');
+            const emojiRows = lines.filter(line => /[🟩🟨⬛⬜]/.test(line));
+
+            if (declaredScore !== 7 && emojiRows.length !== declaredScore) {
+                msg.style.color = '#d9534f';
+                msg.innerText = `Validation Error: You claimed ${declaredScore}/6 tries, but your emoji grid has ${emojiRows.length} rows!`;
+                return;
+            }
+
+            const localToday = getLocalTodayString();
+            const currentSelectedStr = formatDateString(selectedDate);
+
+            if (currentSelectedStr !== localToday) {
+                msg.style.color = '#d9534f';
+                msg.innerText = 'Error: You can only submit scores for today. Past dates are locked for viewing only.';
+                return;
+            }
+
+            const { data: existingSubmissions, error: checkError } = await _supabase
+                .from('submissions')
+                .select('id')
+                .eq('user_id', user.id)
+                .eq('game_id', 'wordle')
+                .gte('created_at', `${localToday}T00:00:00`)
+                .lte('created_at', `${localToday}T23:59:59`);
+
+            if (checkError) {
+                msg.style.color = '#d9534f';
+                msg.innerText = 'Error checking previous submissions: ' + checkError.message;
+                return;
+            }
+
+            if (existingSubmissions && existingSubmissions.length > 0) {
+                msg.style.color = '#d9534f';
+                msg.innerText = 'Restriction: You have already submitted your score for Wordle today. All entries are final!';
+                return;
+            }
+
+            const confirmFinal = confirm("WARNING: Once submitted, your score is final and cannot be edited or re-submitted today. Do you wish to proceed?");
+            if (!confirmFinal) {
+                msg.style.color = '#3E3630';
+                msg.innerText = 'Submission canceled.';
+                return;
+            }
+
+            msg.style.color = '#3E3630';
+            msg.innerText = `Validated! Puzzle #${puzzleNumber}, Score: ${declaredScore}/6. Submitting...`;
+
+            const timestampToSave = new Date().toISOString();
+            const { error } = await _supabase.from('submissions').insert([{
+                user_id: user.id,
+                game_id: 'wordle',
+                puzzle_number: puzzleNumber,
+                score: declaredScore,
+                raw_share_text: text,
+                created_at: timestampToSave
+            }]);
+
+            if (error) {
+                msg.style.color = '#d9534f';
+                msg.innerText = 'Error submitting score to database: ' + error.message;
+            } else {
+                msg.style.color = '#5cb85c';
+                msg.innerText = 'Score successfully submitted and locked in as final!';
+                document.getElementById('shareText').value = '';
+                loadLeaderboard();
+            }
+        }
+
+        async function loadLeaderboard() {
+            const tbody = document.getElementById('leaderboardBody');
+            tbody.innerHTML = `<tr><td colspan="3" style="text-align: center;">Loading leaderboard...</td></tr>`;
+
+            const dateStr = formatDateString(selectedDate);
+            const startOfDay = `${dateStr}T00:00:00`;
+            const endOfDay = `${dateStr}T23:59:59`;
+
+            const { data, error } = await _supabase
+                .from('leaderboard_rankings')
+                .select('*')
+                .eq('game_id', 'wordle')
+                .gte('last_played', startOfDay)
+                .lte('last_played', endOfDay)
+                .order('best_score', { ascending: true })
+                .limit(10);
+
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #d9534f;">Error loading leaderboard</td></tr>`;
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align: center;">No scores recorded for this date.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            data.forEach((row, index) => {
+                let displayScore = row.best_score === 7 ? 'X/6 (Failed)' : `${row.best_score} tries`;
+                tbody.innerHTML += `
+                    <tr>
+                        <td>#${index + 1}</td>
+                        <td>${row.username || 'Anonymous'}</td>
+                        <td>${displayScore}</td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>
